@@ -68,22 +68,64 @@ try:
 
         # Extract information from each property box
         for prop in property_boxes:
-            # Extract various details
-            property_name = prop.find("h2", class_="srpTuple__tupleTitleOverflow").text.strip()
-            project_name = prop.find("td", class_="srpTuple__propertyPremiumHeading").text.strip()
-            rating = prop.find("span", class_="Fomo__carouselShortlistTag").text.strip()
-            places_nearby = prop.find("div", class_="SliderTagsAndChips__nearByInfo").text.strip()
-            price = prop.find("td", id="srp_tuple_price").text.strip()
-            price_per_sqft = prop.find("div", id="srp_tuple_price_per_unit_area").text.strip()
-            area = prop.find("td", id="srp_tuple_primary_area").text.strip()
-            description = prop.find("div", class_="ellipsis srpTuple__smallDescriptionStyle").text.strip()
-            posted_date = prop.find("div", class_="srpTuple__postedByText").text.strip()
-            posted_by = prop.find("div", class_="srpTuple__postedByText list_header_semiBold Ng100 ellipsis").text.strip()
+            try:
+                property_name = prop.find("h2", class_="srpTuple__tupleTitleOverflow").text.strip()
+            except AttributeError:
+                property_name = None
+
+            try:
+                project_name = prop.find("td", class_="srpTuple__propertyPremiumHeading").text.strip()
+            except AttributeError:
+                project_name = None
+            
+            try:
+                rating = prop.find("span", class_="Fomo__carouselShortlistTag").text.strip()
+            except AttributeError:
+                rating = None
+                
+            try:
+                places_nearby = prop.find("div", class_="SliderTagsAndChips__nearByInfo").text.strip()
+            except AttributeError:
+                places_nearby = None
+
+            try:
+                price = prop.find("td", id="srp_tuple_price").text.strip()
+            except AttributeError:
+                price = None
+                
+            try:
+                price_per_sqft = prop.find("div", id="srp_tuple_price_per_unit_area").text.strip()
+            except AttributeError:
+                price_per_sqft = None
+
+            try:
+                area = prop.find("td", id="srp_tuple_primary_area").text.strip()
+            except AttributeError:
+                area = None
+
+            try:
+                description = prop.find("div", class_="ellipsis srpTuple__smallDescriptionStyle").text.strip()
+            except AttributeError:
+                description = None
+
+            try:
+                posted_date = prop.find("div", class_="srpTuple__postedByText").text.strip()
+            except AttributeError:
+                posted_date = None
+
+            try:
+                posted_by = prop.find("div", class_="srpTuple__postedByText list_header_semiBold Ng100 ellipsis").text.strip()
+            except AttributeError:
+                posted_by = None
 
             # Splitting area into different parts
-            area_parts = area.split('\n')
-            area_sqft = area_parts[0]
-            area_sqm = area_parts[1]
+            try:
+                area_parts = area.split('\n')
+                area_sqft = area_parts[0]
+                area_sqm = area_parts[1]
+            except (AttributeError, IndexError):
+                area_sqft = None
+                area_sqm = None
 
             # Append extracted data to respective lists
             data["Property"].append(property_name)
@@ -119,7 +161,6 @@ except Exception as e:
 
 
 finally:
-    pdb.set_trace()
     # Create a dataframe from the extracted data
     df = pd.DataFrame(data)
 
