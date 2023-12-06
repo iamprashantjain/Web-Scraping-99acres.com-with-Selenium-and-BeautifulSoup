@@ -141,20 +141,17 @@ try:
             data["Posted Date"].append(posted_date)
             data["Posted By"].append(posted_by)
 
-        # Check if the "Next Page" button is clickable
-        next_page = driver.find_element(By.XPATH, '/html/body/div[1]/div/div/div[5]/div[3]/div[3]/div[3]/a')
-        if 'disabled' in next_page.get_attribute('class'):
-            # If the "Next Page" button is disabled, break the loop
+        try:
+            # Check if the "Next Page" button is clickable else break
+            next_page = driver.find_element(By.XPATH, '/html/body/div[1]/div/div/div[5]/div[3]/div[3]/div[3]/a')
+            random_delay()
+            next_page.click()
+            random_delay()
+        
+        except Exception as e:
+            print(e)
             break
 
-        # Introduce a random delay
-        random_delay()
-
-        # Click on the next page button
-        next_page.click()
-
-        # Introduce another delay before continuing
-        random_delay()
 
 except Exception as e:
     print(e)
@@ -163,6 +160,4 @@ except Exception as e:
 finally:
     # Create a dataframe from the extracted data
     df = pd.DataFrame(data)
-
-    # Display the dataframe
-    print(df)
+    df.to_excel("99acres_ggn_data.xlsx", index=False)
