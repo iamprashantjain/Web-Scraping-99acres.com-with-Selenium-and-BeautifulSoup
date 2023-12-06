@@ -12,22 +12,13 @@ from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 import requests
-from fake_useragent import UserAgent
 
 
-# Initialize UserAgent
-user_agent = UserAgent()
-
-
-# Setting driver with random User-Agent
-chrome_options = webdriver.ChromeOptions()
-chrome_options.add_argument(f"user-agent={user_agent.random}")
-chrome_options.add_argument("--headless")  # Run in headless mode
-chrome_options.add_argument("--disable-gpu")
-chrome_options.add_argument("--no-sandbox")
-
+#setting driver
 driver_path = r"D:\chromedriver-win64_120\chromedriver-win64\chromedriver.exe"
 service = Service(driver_path)
+chrome_options = webdriver.ChromeOptions()
+chrome_options.add_experimental_option("debuggerAddress", "127.0.0.1:9222")
 driver = webdriver.Chrome(service=service, options=chrome_options)
 
 # cmd command
@@ -65,18 +56,22 @@ data = {
 }
 
 
-count = 0
+base_url = "https://www.99acres.com/property-in-gurgaon-ffid-page-{count}"
+count = 1
 
 try:
     #webscraping all pages in loop
-    while count <= 10:
-        print(f"Scraping page: {count}")
-        count += 1
+    while count <=10:
+        print(f"Scraping page no. {count}")
+
+        current_url = base_url
+        
+        # Navigate to the new URL
+        driver.get(current_url)
+        random_delay()
+
         # Fetching html content of the page
         page_source = driver.page_source
-
-        time.sleep(random.uniform(2, 5))
-
         soup = BeautifulSoup(page_source, 'html.parser')
 
         # Webscraping all boxes on the page
@@ -157,18 +152,9 @@ try:
             data["Posted Date"].append(posted_date)
             data["Posted By"].append(posted_by)
 
-            random_delay()
+            count += 1
 
-        try:
-            # Check if the "Next Page" button is clickable else break
-            next_page = driver.find_element(By.XPATH, '/html/body/div[1]/div/div/div[5]/div[3]/div[3]/div[3]/a')
             random_delay()
-            next_page.click()
-            random_delay()
-        
-        except Exception as e:
-            print(e)
-            break
 
 
 except Exception as e:
@@ -178,4 +164,4 @@ except Exception as e:
 finally:
     # Create a dataframe from the extracted data
     df = pd.DataFrame(data)
-    df.to_excel("99acres_ggn_data.xlsx", index=False)
+    df.to_csv(f"99acres_ggn_{count}.csv", index=False)
