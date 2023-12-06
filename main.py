@@ -12,13 +12,22 @@ from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 import requests
+from fake_useragent import UserAgent
 
 
-#setting driver
+# Initialize UserAgent
+user_agent = UserAgent()
+
+
+# Setting driver with random User-Agent
+chrome_options = webdriver.ChromeOptions()
+chrome_options.add_argument(f"user-agent={user_agent.random}")
+chrome_options.add_argument("--headless")  # Run in headless mode
+chrome_options.add_argument("--disable-gpu")
+chrome_options.add_argument("--no-sandbox")
+
 driver_path = r"D:\chromedriver-win64_120\chromedriver-win64\chromedriver.exe"
 service = Service(driver_path)
-chrome_options = webdriver.ChromeOptions()
-chrome_options.add_experimental_option("debuggerAddress", "127.0.0.1:9222")
 driver = webdriver.Chrome(service=service, options=chrome_options)
 
 # cmd command
@@ -56,11 +65,18 @@ data = {
 }
 
 
+count = 0
+
 try:
     #webscraping all pages in loop
-    while True:
+    while count <= 10:
+        print(f"Scraping page: {count}")
+        count += 1
         # Fetching html content of the page
         page_source = driver.page_source
+
+        time.sleep(random.uniform(2, 5))
+
         soup = BeautifulSoup(page_source, 'html.parser')
 
         # Webscraping all boxes on the page
@@ -140,6 +156,8 @@ try:
             data["Description"].append(description)
             data["Posted Date"].append(posted_date)
             data["Posted By"].append(posted_by)
+
+            random_delay()
 
         try:
             # Check if the "Next Page" button is clickable else break
